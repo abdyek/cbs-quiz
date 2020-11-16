@@ -1,0 +1,48 @@
+body {
+    background-color:#444;
+    color:#eee;
+}
+
+#canvas {
+    background-color:grey;
+    float:left;
+}
+
+#controlPanel {
+    float:left;
+    width:180px;
+    padding:10px;
+}
+
+#controlPanel * {
+    margin:5px;
+}
+
+.panelElement {
+    margin:10px;
+    float:left;
+}
+
+.title {
+    float:left;
+    clear:both;
+}
+
+select {
+    float:left;
+    clear:both;
+}
+
+#app {
+    width:1200px;
+    margin:0 auto;
+}
+
+header h1 {
+    font-family: 'Xanh Mono', monospace;
+    text-align:center;
+}
+
+#controlPanelHeader {
+    text-align:center;
+}
