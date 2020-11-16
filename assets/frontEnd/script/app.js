@@ -36,16 +36,16 @@ var DATA = {
         }],
         "line": [{
             id: 0,
-            name: "Solid",
-            value: "solid"
+            name: "Thin",
+            value: "thin"
         }, {
             id: 1,
-            name: "Dotted",
-            value: "dotted"
+            name: "Normal",
+            value: "normal"
         }, {
             id: 2,
-            name: "Dashed",
-            value: "dashed"
+            name: "Thick",
+            value: "thick"
         }],
         "shape": [{
             id: 0,
@@ -115,21 +115,22 @@ var App = function (_React$Component) {
         _this.changeType = _this.changeType.bind(_this);
         _this.changeSubType = _this.changeSubType.bind(_this);
         _this.changeColor = _this.changeColor.bind(_this);
+        _this.clearCanvas = _this.clearCanvas.bind(_this);
         return _this;
     }
 
     _createClass(App, [{
         key: "changeType",
         value: function changeType(value) {
-            console.log("üst");
+            var selectedSubValue = DATA['subTypes'][value][0].value;
             this.setState({
-                selectedType: value
+                selectedType: value,
+                selectedSubType: selectedSubValue
             });
         }
     }, {
         key: "changeSubType",
         value: function changeSubType(value) {
-            console.log("alt");
             this.setState({
                 selectedSubType: value
             });
@@ -142,20 +143,35 @@ var App = function (_React$Component) {
             });
         }
     }, {
+        key: "clearCanvas",
+        value: function clearCanvas() {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
                 "div",
                 null,
                 React.createElement(CanvasComponent, { selectedType: this.state.selectedType, selectedSubType: this.state.selectedSubType, color: this.state.color }),
-                React.createElement(Header, null),
                 React.createElement(
                     "div",
                     { id: "controlPanel" },
+                    React.createElement(
+                        "h3",
+                        { id: "controlPanelHeader" },
+                        "Control Panel"
+                    ),
                     React.createElement(Selector, { title: "Drawing Type", options: DATA['drawingTypes'], changeOption: this.changeType, selected: this.state.selectedType }),
                     React.createElement(Selector, { title: "Sub Title", options: DATA['subTypes'][this.state.selectedType], changeOption: this.changeSubType, selected: this.state.selectedSubType }),
                     React.createElement(Selector, { title: "Color", options: DATA['colors'], changeOption: this.changeColor, selected: this.state.color }),
-                    React.createElement(Input, { title: "Properties" })
+                    React.createElement(
+                        "button",
+                        { onClick: this.clearCanvas },
+                        "Clear"
+                    )
                 )
             );
         }
@@ -164,39 +180,16 @@ var App = function (_React$Component) {
     return App;
 }(React.Component);
 
-var Header = function (_React$Component2) {
-    _inherits(Header, _React$Component2);
-
-    function Header() {
-        _classCallCheck(this, Header);
-
-        return _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).apply(this, arguments));
-    }
-
-    _createClass(Header, [{
-        key: "render",
-        value: function render() {
-            return React.createElement(
-                "h3",
-                { id: "controlPanelHeader" },
-                "Control Panel"
-            );
-        }
-    }]);
-
-    return Header;
-}(React.Component);
-
-var Selector = function (_React$Component3) {
-    _inherits(Selector, _React$Component3);
+var Selector = function (_React$Component2) {
+    _inherits(Selector, _React$Component2);
 
     function Selector(props) {
         _classCallCheck(this, Selector);
 
-        var _this3 = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this, props));
+        var _this2 = _possibleConstructorReturn(this, (Selector.__proto__ || Object.getPrototypeOf(Selector)).call(this, props));
 
-        _this3.handleChange = _this3.handleChange.bind(_this3);;
-        return _this3;
+        _this2.handleChange = _this2.handleChange.bind(_this2);;
+        return _this2;
     }
 
     _createClass(Selector, [{
@@ -239,8 +232,8 @@ var Selector = function (_React$Component3) {
     return Selector;
 }(React.Component);
 
-var Input = function (_React$Component4) {
-    _inherits(Input, _React$Component4);
+var Input = function (_React$Component3) {
+    _inherits(Input, _React$Component3);
 
     function Input() {
         _classCallCheck(this, Input);
@@ -267,69 +260,48 @@ var Input = function (_React$Component4) {
     return Input;
 }(React.Component);
 
-var CanvasComponent = function (_React$Component5) {
-    _inherits(CanvasComponent, _React$Component5);
+var CanvasComponent = function (_React$Component4) {
+    _inherits(CanvasComponent, _React$Component4);
 
     function CanvasComponent(props) {
         _classCallCheck(this, CanvasComponent);
 
-        var _this5 = _possibleConstructorReturn(this, (CanvasComponent.__proto__ || Object.getPrototypeOf(CanvasComponent)).call(this, props));
+        var _this4 = _possibleConstructorReturn(this, (CanvasComponent.__proto__ || Object.getPrototypeOf(CanvasComponent)).call(this, props));
 
-        _this5.state = {
+        _this4.otherAttributes = {
+            'line': {
+                clicked: false,
+                firstDot: {
+                    x: null,
+                    y: null
+                }
+            }
+        };
+        _this4.state = {
             x: 0,
             y: 0
         };
-        _this5.handleMouseEnter = _this5.handleMouseEnter.bind(_this5);
-        _this5.handleMouseMove = _this5.handleMouseMove.bind(_this5);
-        _this5.handOnClick = _this5.handleOnClick.bind(_this5);
-        _this5.handleMouseDown = _this5.handleMouseDown.bind(_this5);
-        _this5.handleMouseUp = _this5.handleMouseUp.bind(_this5);
-        _this5.updateCanvas = _this5.updateCanvas.bind(_this5);
-        _this5.drawStick = _this5.drawStick.bind(_this5);
-        _this5.drawRectangle = _this5.drawRectangle.bind(_this5);
-        _this5.drawCircle = _this5.drawCircle.bind(_this5);
-        _this5.draw = _this5.draw.bind(_this5);
-        return _this5;
+        _this4.handleMouseMove = _this4.handleMouseMove.bind(_this4);
+        _this4.handleMouseUp = _this4.handleMouseUp.bind(_this4);
+        _this4.drawStick = _this4.drawStick.bind(_this4);
+        _this4.drawRectangle = _this4.drawRectangle.bind(_this4);
+        _this4.drawCircle = _this4.drawCircle.bind(_this4);
+        _this4.drawShape1 = _this4.drawShape1.bind(_this4);
+        _this4.drawShape2 = _this4.drawShape2.bind(_this4);
+        _this4.drawShape3 = _this4.drawShape3.bind(_this4);
+        _this4.draw = _this4.draw.bind(_this4);
+        return _this4;
     }
 
     _createClass(CanvasComponent, [{
         key: "handleMouseMove",
         value: function handleMouseMove(e) {
             this.setState({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
-            //console.log(this.state.x + "-" + this.state.y);
-        }
-    }, {
-        key: "handleOnClick",
-        value: function handleOnClick() {
-            console.log("onClick");
-        }
-    }, {
-        key: "handleMouseEnter",
-        value: function handleMouseEnter() {
-            console.log("MouseEnter");
-        }
-    }, {
-        key: "handleMouseDown",
-        value: function handleMouseDown() {
-            console.log("MouseDown");
         }
     }, {
         key: "handleMouseUp",
         value: function handleMouseUp() {
-            console.log("MouseUp");
             this.draw();
-        }
-    }, {
-        key: "componentDidMount",
-        value: function componentDidMount() {
-            this.updateCanvas();
-        }
-    }, {
-        key: "updateCanvas",
-        value: function updateCanvas() {
-            this.context = this.refs.canvas.getContext('2d');
-            //this.context.fillRect(0,0, 100, 100);
-            //this.drawStick(100, 100, 500, 500, 5, 'red');
         }
     }, {
         key: "drawStick",
@@ -366,6 +338,61 @@ var CanvasComponent = function (_React$Component5) {
             ctx.stroke();
         }
     }, {
+        key: "drawShape1",
+        value: function drawShape1(x, y, color) {
+            var ctx = this.refs.canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + 10, y + 30);
+            ctx.lineTo(x + 30, y + 30);
+            ctx.closePath();
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = color;
+            ctx.stroke();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+    }, {
+        key: "drawShape2",
+        value: function drawShape2(R, cX, cY, N, color) {
+            var ctx = this.refs.canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(cX + R, cY);
+            for (var i = 1; i <= N * 2; i++) {
+                if (i % 2 == 0) {
+                    var theta = i * (Math.PI * 2) / (N * 2);
+                    var x = cX + R * Math.cos(theta);
+                    var y = cY + R * Math.sin(theta);
+                } else {
+                    var theta = i * (Math.PI * 2) / (N * 2);
+                    var x = cX + R / 2 * Math.cos(theta);
+                    var y = cY + R / 2 * Math.sin(theta);
+                }
+                ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+            ctx.fill();
+            ctx.stroke();
+        }
+    }, {
+        key: "drawShape3",
+        value: function drawShape3(x, y, color) {
+            var ctx = this.refs.canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + 30, y);
+            ctx.lineTo(x + 60, y + 30);
+            ctx.lineTo(x, y + 30);
+            ctx.closePath();
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = color;
+            ctx.stroke();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+    }, {
         key: "draw",
         value: function draw() {
             if (this.props.selectedType == "dot") {
@@ -378,17 +405,40 @@ var CanvasComponent = function (_React$Component5) {
                     radius = 5;
                 }
                 this.drawCircle(this.state.x, this.state.y, radius, this.props.color);
+            } else if (this.props.selectedType == "line") {
+                if (this.otherAttributes['line'].clicked) {
+                    this.otherAttributes['line'].clicked = false;
+                    firstDot = this.otherAttributes['line'].firstDot;
+                    var width = void 0;
+                    if (this.props.selectedSubType == "thin") {
+                        width = 1;
+                    } else if (this.props.selectedSubType == "normal") {
+                        width = 3;
+                    } else if (this.props.selectedSubType == "thick") {
+                        width = 5;
+                    }
+                    this.drawStick(firstDot.x, firstDot.y, this.state.x, this.state.y, width, this.props.color);
+                } else {
+                    this.otherAttributes['line'].clicked = true;
+                    this.otherAttributes['line'].firstDot.x = this.state.x;
+                    this.otherAttributes['line'].firstDot.y = this.state.y;
+                }
+            } else if (this.props.selectedType == "shape") {
+                if (this.props.selectedSubType == "type-1") {
+                    this.drawShape1(this.state.x, this.state.y, this.props.color);
+                } else if (this.props.selectedSubType == "type-2") {
+                    this.drawShape2(10, this.state.x, this.state.y, 5, this.props.color);
+                } else if (this.props.selectedSubType == "type-3") {
+                    this.drawShape3(this.state.x, this.state.y, this.props.color);
+                }
             }
         }
     }, {
         key: "render",
         value: function render() {
             return React.createElement("canvas", { id: "canvas", ref: "canvas", width: 1000, height: 600,
-                onMouseEnter: this.handleMouseEnter,
                 onMouseMove: this.handleMouseMove,
-                onMouseDown: this.handleMouseDown,
-                onMouseUp: this.handleMouseUp,
-                onClick: this.handleOnClick
+                onMouseUp: this.handleMouseUp
             });
         }
     }]);

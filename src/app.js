@@ -37,18 +37,18 @@ const DATA = {
         "line": [
             {
                 id:0,
-                name:"Solid",
-                value:"solid"
+                name:"Thin",
+                value:"thin"
             },
             {
                 id:1,
-                name:"Dotted",
-                value:"dotted"
+                name:"Normal",
+                value:"normal"
             },
             {
                 id:2,
-                name:"Dashed",
-                value:"dashed"
+                name:"Thick",
+                value:"thick"
             }
         ],
         "shape": [
@@ -127,15 +127,16 @@ class App extends React.Component {
         this.changeType = this.changeType.bind(this);
         this.changeSubType = this.changeSubType.bind(this);
         this.changeColor = this.changeColor.bind(this);
+        this.clearCanvas = this.clearCanvas.bind(this);
     }
     changeType(value) {
-        console.log("üst");
+        let selectedSubValue = DATA['subTypes'][value][0].value;
         this.setState({
-            selectedType:value
+            selectedType:value,
+            selectedSubType:selectedSubValue,
         })
     }
     changeSubType(value) {
-        console.log("alt");
         this.setState({
             selectedSubType:value
         })
@@ -145,30 +146,26 @@ class App extends React.Component {
             color:value
         })
     }
+    clearCanvas(){
+        let canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     render() {
         return (
             <div>
                 <CanvasComponent selectedType={this.state.selectedType} selectedSubType={this.state.selectedSubType} color={this.state.color}/>
-                <Header />
                 <div id="controlPanel">
+                    <h3 id="controlPanelHeader">Control Panel</h3>
                     <Selector title="Drawing Type" options={DATA['drawingTypes']} changeOption={this.changeType} selected={this.state.selectedType}/>
                     <Selector title="Sub Title" options={DATA['subTypes'][this.state.selectedType]} changeOption={this.changeSubType} selected={this.state.selectedSubType} />
                     <Selector title="Color" options={DATA['colors']} changeOption={this.changeColor} selected={this.state.color}/>
-                    <Input title="Properties" />
+                    <button onClick={this.clearCanvas}>Clear</button>
                 </div>
             </div>
         )
     }
 }
-
-class Header extends React.Component {
-    render() {
-        return (
-            <h3 id="controlPanelHeader">Control Panel</h3>
-        )
-    }
-}
-
 
 class Selector extends React.Component {
     constructor(props){
@@ -212,45 +209,34 @@ class Input extends React.Component {
 class CanvasComponent extends React.Component {
     constructor(props) {
         super(props);
+        this.otherAttributes = {
+            'line':{
+                clicked:false,
+                firstDot: {
+                    x:null,
+                    y:null
+                }
+            }
+        }
         this.state = {
             x:0,
             y:0
         }
-        this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
-        this.handOnClick = this.handleOnClick.bind(this);
-        this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
-        this.updateCanvas = this.updateCanvas.bind(this);
         this.drawStick = this.drawStick.bind(this);
         this.drawRectangle = this.drawRectangle.bind(this);
         this.drawCircle = this.drawCircle.bind(this);
+        this.drawShape1 = this.drawShape1.bind(this);
+        this.drawShape2 = this.drawShape2.bind(this);
+        this.drawShape3 = this.drawShape3.bind(this);
         this.draw = this.draw.bind(this);
     }
     handleMouseMove(e) {
         this.setState({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
-        //console.log(this.state.x + "-" + this.state.y);
-    }
-    handleOnClick() {
-        console.log("onClick");
-    }
-    handleMouseEnter() {
-        console.log("MouseEnter");
-    }
-    handleMouseDown() {
-        console.log("MouseDown");
     }
     handleMouseUp() {
-        console.log("MouseUp");
         this.draw();
-    }
-    componentDidMount() {
-        this.updateCanvas();
-    }
-    updateCanvas() {
-        this.context = this.refs.canvas.getContext('2d');
-        //this.context.fillRect(0,0, 100, 100);
-        //this.drawStick(100, 100, 500, 500, 5, 'red');
     }
     drawStick(x1, y1, x2, y2, width, color) {
         const ctx = this.refs.canvas.getContext('2d');
@@ -280,6 +266,55 @@ class CanvasComponent extends React.Component {
         ctx.strokeStyle = color;
         ctx.stroke();
     }
+    drawShape1(x, y, color) {
+        const ctx = this.refs.canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x+10, y+30);
+        ctx.lineTo(x+30, y+30);
+        ctx.closePath();
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+        ctx.fillStyle = color;
+        ctx.fill();
+    }
+    drawShape2(R, cX, cY, N, color) {
+        const ctx = this.refs.canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(cX + R,cY);
+        for(var i = 1; i <= N * 2; i++) {
+            if(i % 2 == 0){
+                var theta = i * (Math.PI * 2) / (N * 2);
+                var x = cX + (R * Math.cos(theta));
+                var y = cY + (R * Math.sin(theta));
+            } else {
+                var theta = i * (Math.PI * 2) / (N * 2);
+                var x = cX + ((R/2) * Math.cos(theta));
+                var y = cY + ((R/2) * Math.sin(theta));
+            }
+            ctx.lineTo(x ,y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        ctx.fill();
+        ctx.stroke();
+    }
+    drawShape3(x, y, color) {
+        const ctx = this.refs.canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x+30, y);
+        ctx.lineTo(x+60, y+30);
+        ctx.lineTo(x, y+30);
+        ctx.closePath();
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+        ctx.fillStyle = color;
+        ctx.fill();
+    }
     draw() {
         if(this.props.selectedType=="dot") {
             let radius;
@@ -291,16 +326,39 @@ class CanvasComponent extends React.Component {
                 radius = 5;
             }
             this.drawCircle(this.state.x, this.state.y, radius, this.props.color);
+        } else if(this.props.selectedType=="line") {
+            if(this.otherAttributes['line'].clicked) {
+                this.otherAttributes['line'].clicked = false;
+                firstDot = this.otherAttributes['line'].firstDot;
+                let width;
+                if(this.props.selectedSubType=="thin") {
+                    width = 1;
+                } else if(this.props.selectedSubType=="normal") {
+                    width = 3;
+                } else if(this.props.selectedSubType=="thick") {
+                    width = 5;
+                }
+                this.drawStick(firstDot.x, firstDot.y, this.state.x, this.state.y, width, this.props.color);
+            } else {
+                this.otherAttributes['line'].clicked = true;
+                this.otherAttributes['line'].firstDot.x = this.state.x;
+                this.otherAttributes['line'].firstDot.y = this.state.y;
+            }
+        } else if(this.props.selectedType=="shape") {
+            if(this.props.selectedSubType=="type-1") {
+                this.drawShape1(this.state.x, this.state.y, this.props.color);
+            } else if(this.props.selectedSubType=="type-2") {
+                this.drawShape2(10, this.state.x, this.state.y, 5, this.props.color);
+            } else if(this.props.selectedSubType=="type-3") {
+                this.drawShape3(this.state.x, this.state.y, this.props.color);
+            }
         }
     }
     render() {
         return (
             <canvas id="canvas" ref="canvas" width={1000} height={600}
-                onMouseEnter={this.handleMouseEnter}
                 onMouseMove={this.handleMouseMove}
-                onMouseDown={this.handleMouseDown}
                 onMouseUp={this.handleMouseUp}
-                onClick={this.handleOnClick}
             />
         );
     }

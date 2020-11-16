@@ -45,4 +45,5 @@ header h1 {
 
 #controlPanelHeader {
     text-align:center;
+    float:left;
 }
